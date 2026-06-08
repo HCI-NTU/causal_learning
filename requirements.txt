@@ -1,0 +1,13 @@
+# Faster R-CNN pipeline (primary)
+torch>=2.0
+torchvision>=0.15
+pycocotools>=2.0.6
+numpy>=1.23
+Pillow>=9.0
+PyYAML>=6.0
+tqdm>=4.64
+# SODA VOC->COCO + plotting
+lxml>=4.9
+matplotlib>=3.6
+# YOLOv11 / RT-DETR baselines (optional architectures)
+ultralytics>=8.3.0

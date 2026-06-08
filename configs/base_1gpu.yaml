@@ -1,0 +1,52 @@
+# =============================================================================
+# base_1gpu.yaml  —  SINGLE SOURCE OF TRUTH for the fixed training recipe.
+#
+# Every condition (erm / aug / causal) and every experiment (spatial / temporal)
+# reads THIS file. Only the five fields below are overridden per run, on the
+# command line, so the comparison is fair by construction:
+#
+#     model        erm | aug | causal
+#     aug_level    none (erm) | strong (aug, causal)
+#     copy_paste   False (erm) | True (aug, causal)
+#     train_split  mocs_train (spatial) | mocs_train_earthmoving (temporal)
+#     out_dir      where to save this run
+#
+# To "fix hyperparameters along the way", edit ONLY this file — the change then
+# applies identically to all conditions. Do not put hyperparameters in the
+# per-run overrides.
+# =============================================================================
+
+# ---- hardware / runtime (single GPU; pin the card with CUDA_VISIBLE_DEVICES) ----
+device: cuda
+num_workers: 8
+seed: 0
+
+# ---- optimizer / schedule (the fixed recipe; identical across all conditions) ----
+# lr is the REFERENCE value for ref_batch_size; it is auto-scaled to batch_size.
+batch_size: 4            # 4080 16GB, clean card. If sharing the card -> set 2.
+lr: 0.02
+ref_batch_size: 16
+lr_auto_scale: true      # effective lr = lr * batch_size / ref_batch_size
+weight_decay: 0.0001
+epochs: 12
+lr_steps: [8, 11]
+warmup_iters: 500
+
+# ---- input resolution (memory lever; keep fixed across conditions) ----
+min_size: 800            # if you OOM while sharing the card: 600
+max_size: 1333           # ...and 1000
+
+# ---- model selection (held-out fraction of the SOURCE; never a target) ----
+selection_frac: 0.1
+
+# ---- causal-head + copy-paste hyperparameters ----
+# Ignored by erm/aug, used by causal. Kept here so they are identical for every
+# causal run. Sweep these on the selection split, then FIX them for the final
+# fair comparison.
+dict_slots: 50
+dict_momentum: 0.3
+fuse: concat
+cp_prob: 0.5
+cp_max: 2
+
+log_every: 50

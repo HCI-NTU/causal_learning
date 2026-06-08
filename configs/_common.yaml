@@ -1,0 +1,19 @@
+# Shared defaults (copied into each config; YAML has no native includes here).
+# Keep optimizer/schedule IDENTICAL across erm/aug/causal so any gap is
+# attributable to augmentation (aug) or the causal head (causal), not training.
+data_root: data
+device: cuda
+seed: 0
+batch_size: 2
+num_workers: 4
+lr: 0.02
+weight_decay: 0.0001
+epochs: 12
+lr_steps: [8, 11]
+warmup_iters: 500
+log_every: 50
+selection_frac: 0.1     # source-internal model-selection split (no target leak)
+# causal-head hyperparameters (ignored by erm/aug)
+dict_slots: 50
+dict_momentum: 0.3
+fuse: concat
